@@ -67,11 +67,7 @@ export async function createInvoice(prevState: State, formData: FormData) {
 const UpdateInvoice = FormSchema.omit({ id: true, date: true });
 
 
-export async function updateInvoice(
-    id: string,
-    prevState: State,
-    formData: FormData,
-) {
+export async function updateInvoice(id: string, prevState: State, formData: FormData) {
     const validatedFields = UpdateInvoice.safeParse({
         customerId: formData.get('customerId'),
         amount: formData.get('amount'),
@@ -90,13 +86,14 @@ export async function updateInvoice(
 
     try {
         await sql`
-            UPDATE invoices
-            SET customer_id = ${customerId}, amount = ${amountInCents}, status = ${status}
-            WHERE id = ${id}
-          `;
-    } catch (error) {
+          UPDATE invoices
+          SET customer_id = ${customerId}, amount = ${amountInCents}, status = ${status}
+          WHERE id = ${id}
+        `;
+      } catch (error) {
+        console.log(error)
         return { message: 'Database Error: Failed to Update Invoice.' };
-    }
+      }
 
     revalidatePath('/dashboard/invoices');
     redirect('/dashboard/invoices');
